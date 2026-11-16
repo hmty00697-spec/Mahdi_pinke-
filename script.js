@@ -1,5 +1,5 @@
 // آدرس Worker بعد از Deploy در این خط قرار می‌گیرد.
-const WORKER_URL = ""; // مثال: https://mahdi-pink-api.YOUR-SUBDOMAIN.workers.dev
+const WORKER_URL = "https://mahdi-pinke.hmty00697.workers.dev"; // مثال: https://mahdi-pink-api.YOUR-SUBDOMAIN.workers.dev
 
 const $ = (id) => document.getElementById(id);
 const pageOne = $("page-one"), pageTwo = $("page-two"), pageDone = $("page-done");
