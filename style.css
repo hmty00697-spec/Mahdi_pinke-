@@ -1,0 +1,30 @@
+*{box-sizing:border-box}
+:root{--pink:#ec4899;--deep:#a21caf;--ink:#64244d;--soft:#fff5fa}
+body{margin:0;min-height:100svh;overflow-x:hidden;font-family:"Vazirmatn",Tahoma,sans-serif;color:var(--ink);background:radial-gradient(circle at 15% 15%,#fff 0,transparent 28%),linear-gradient(145deg,#fff0f6 0%,#ffe0ed 48%,#fce7f3 100%);display:grid;place-items:center;padding:24px 16px;position:relative}
+.glow{position:fixed;border-radius:50%;filter:blur(3px);opacity:.48;pointer-events:none}.glow-one{width:220px;height:220px;background:#f9a8d4;top:-90px;right:-80px}.glow-two{width:260px;height:260px;background:#fbcfe8;bottom:-130px;left:-100px}
+.shell{width:min(100%,480px);position:relative;z-index:1}
+.top-pill{width:max-content;max-width:100%;margin:0 auto 16px;padding:8px 15px;border:1px solid #fff;background:#ffffffa8;border-radius:99px;font-size:12px;color:#a34b7d;box-shadow:0 8px 25px #c0265c12}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ec4899;margin-left:6px;box-shadow:0 0 0 4px #fce7f3}
+.card{background:#ffffffd9;border:1px solid #fff;border-radius:30px;padding:34px 24px 28px;text-align:center;box-shadow:0 24px 70px #a21caf20, inset 0 1px #fff;backdrop-filter:blur(12px);animation:pop .5s cubic-bezier(.2,.8,.2,1) both}
+.hidden{display:none!important}
+.sticker{width:76px;height:76px;margin:0 auto 18px;border-radius:25px;display:grid;place-items:center;font-size:37px;background:linear-gradient(145deg,#ffe4f0,#fbcfe8);box-shadow:0 10px 25px #ec489926;transform:rotate(-5deg)}
+.eyebrow{font-size:13px;color:#c06a98;margin:0 0 8px}
+h1{font-size:clamp(25px,7vw,34px);line-height:1.5;margin:0 0 14px;font-weight:900;color:#9d2868}
+.question{font-size:23px;font-weight:800;color:#64244d;margin:12px 0}
+.second-question{font-size:25px}
+.hint{font-size:14px;color:#a45a82;min-height:26px;margin:10px 0 23px}
+.actions{display:flex;justify-content:center;align-items:center;gap:12px;min-height:62px;position:relative}
+.choice{border:0;border-radius:17px;padding:14px 24px;min-width:118px;font:800 16px "Vazirmatn",sans-serif;cursor:pointer;touch-action:manipulation;transition:transform .22s ease,box-shadow .22s ease,background .22s ease;box-shadow:0 9px 20px #b8327822}
+.choice:active{transform:scale(.96)}
+.choice-yes{color:white;background:linear-gradient(135deg,#f472b6,#db2777);box-shadow:0 9px 22px #db277744}
+.choice-no{color:#9d2868;background:#fce7f3;border:1px solid #f9a8d4}
+.tiny-note{margin-top:24px;font-size:11px;color:#bd7b9f}
+footer{text-align:center;color:#ba7b9f;font-size:11px;margin:19px 0 0}footer span{color:#ec4899}
+.toast{position:fixed;z-index:5;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translate(-50%,20px);background:#7d2458;color:#fff;padding:12px 18px;border-radius:15px;font-size:13px;box-shadow:0 10px 30px #7d245844;opacity:0;pointer-events:none;transition:.25s;max-width:calc(100% - 32px);text-align:center;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.hearts{position:fixed;inset:0;overflow:hidden;pointer-events:none}.heart{position:absolute;bottom:-35px;color:#f472b6;opacity:0;animation:floatUp linear forwards}
+.celebrate{font-size:27px;margin-top:20px}
+@keyframes pop{from{opacity:0;transform:translateY(15px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes floatUp{0%{transform:translateY(0) rotate(0);opacity:0}12%{opacity:.55}100%{transform:translateY(-110vh) rotate(35deg);opacity:0}}
+@media(max-width:380px){.card{padding:27px 17px 23px;border-radius:25px}.choice{min-width:108px;padding:13px 17px}.question{font-size:21px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
