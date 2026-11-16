@@ -1,3 +1,12 @@
-name = "mahdi-pink"
+name = "mahdi-pinke"
 main = "worker.js"
 compatibility_date = "2026-11-15"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mahdi-pink-db"
+database_id = "e7a26d63-4034-4800-bbd9-2ff91ac26b6f"
+migrations_dir = "migrations"
+
+[triggers]
+crons = ["*/15 * * * *"]

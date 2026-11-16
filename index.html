@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#ffe3ef">
+  <meta name="theme-color" content="#fff1f7">
   <meta name="description" content="یه سؤال کوچولوی صورتی و مهم 💗">
   <title>یه سؤال مهم 💗</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,17 +12,21 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="glow glow-one"></div><div class="glow glow-two"></div>
-  <div class="hearts" aria-hidden="true"></div>
+  <header class="site-head">
+    <a class="brand" href="#" aria-label="MAHDI PINK">MAHDI<span>.</span>PINK</a>
+    <button class="admin-open" id="admin-open" type="button" aria-label="تنظیمات مدیریت">⚙ <span>مدیریت</span></button>
+  </header>
+
   <main class="shell">
     <div class="top-pill"><span class="dot"></span> یک سؤال کاملاً جدی! شاید هم نه 😂</div>
+
     <section class="card" id="page-one">
       <div class="sticker">💌</div>
       <p class="eyebrow">قبل از هر چیزی...</p>
       <h1>یه سؤال مهم دارم</h1>
       <p class="question">دوست‌پسر داری؟</p>
       <p class="hint" id="first-hint">با دقت جواب بده‌ها 😌</p>
-      <div class="actions first-actions">
+      <div class="actions first-actions" id="first-actions">
         <button class="choice choice-yes" id="first-yes" type="button">آره 💕</button>
         <button class="choice choice-no" id="first-no" type="button">نه 🙈</button>
       </div>
@@ -47,11 +51,49 @@
       <p class="eyebrow">ثبت شد در تاریخ اینترنت!</p>
       <h1>وای جدی؟! 😭💗</h1>
       <p class="question">الان باید یه جشن کوچولو بگیریم!</p>
-      <p class="hint">پیامت رسید؛ صاحب سایت هم باخبر شد 😂</p>
+      <p class="hint">جوابت ثبت شد؛ ممنون که بازی رو تا آخر اومدی 😂</p>
       <div class="celebrate">🎀 ✨ 💞 ✨ 🎀</div>
     </section>
-    <footer>ساخته‌شده با کلی قلب صورتی <span>♥</span> MAHDI.0P</footer>
+
+    <footer>
+      <span>ساخته‌شده با کلی قلب صورتی ♥</span>
+      <small>آمار ناشناس تعاملات تا ۲۴ ساعت نگهداری می‌شود.</small>
+    </footer>
   </main>
+
+  <section class="admin-panel hidden" id="admin-panel" aria-label="پنل مدیریت">
+    <div class="admin-box">
+      <div class="admin-heading">
+        <div><span class="eyebrow">MAHDI-PINK</span><h2>پنل مدیریت</h2></div>
+        <button class="close-admin" id="admin-close" type="button" aria-label="بستن">×</button>
+      </div>
+      <form id="admin-login" class="login-form">
+        <label for="admin-password">رمز مدیریت</label>
+        <input id="admin-password" type="password" autocomplete="current-password" placeholder="رمز عبور" required>
+        <button class="primary-button" type="submit">ورود به پنل</button>
+        <p class="admin-error" id="admin-error" role="status"></p>
+      </form>
+      <div id="admin-content" class="hidden">
+        <div class="stats-grid">
+          <div class="stat"><strong id="stat-visitors">۰</strong><span>بازدیدکننده یکتا</span></div>
+          <div class="stat"><strong id="stat-views">۰</strong><span>بازدید صفحه</span></div>
+          <div class="stat"><strong id="stat-first">۰</strong><span>تلاش آره در سؤال اول</span></div>
+          <div class="stat"><strong id="stat-second">۰</strong><span>تلاش نه در سؤال دوم</span></div>
+          <div class="stat"><strong id="stat-final">۰</strong><span>تأیید نهایی آره</span></div>
+        </div>
+        <div class="visitor-heading"><h3>بازدیدکننده‌های اخیر</h3><button id="refresh-stats" class="refresh-button" type="button">به‌روزرسانی</button></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>شناسه ناشناس</th><th>دستگاه</th><th>مرورگر</th><th>کشور تقریبی</th><th>آره اول</th><th>نه دوم</th><th>تأیید نهایی</th></tr></thead>
+            <tbody id="visitor-rows"><tr><td colspan="7">هنوز آماری ثبت نشده است.</td></tr></tbody>
+          </table>
+        </div>
+        <p class="retention-note">داده‌ها به‌صورت خودکار حدود ۲۴ ساعت پس از آخرین فعالیت حذف می‌شوند. IP خام ذخیره نمی‌شود.</p>
+        <button id="admin-logout" class="logout-button" type="button">خروج</button>
+      </div>
+    </div>
+  </section>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="script.js"></script>
 </body>

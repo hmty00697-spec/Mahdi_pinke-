@@ -1,97 +1,174 @@
-// آدرس Worker بعد از Deploy در این خط قرار می‌گیرد.
-const WORKER_URL = "https://mahdi-pinke.hmty00697.workers.dev"; // مثال: https://mahdi-pink-api.YOUR-SUBDOMAIN.workers.dev
-
+// آدرس Worker برای API و پنل مدیریت
+const API_BASE = "https://mahdi-pinke.hmty00697.workers.dev";
 const $ = (id) => document.getElementById(id);
 const pageOne = $("page-one"), pageTwo = $("page-two"), pageDone = $("page-done");
 const firstYes = $("first-yes"), firstNo = $("first-no");
 const secondYes = $("second-yes"), secondNo = $("second-no");
-let firstEscapes = 0, secondEscapes = 0, toastTimer;
+const visitorKey = "mahdiPinkVisitorId";
+const visitorId = getVisitorId();
+let firstAttempts = 0, secondAttempts = 0, toastTimer;
 
+function getVisitorId() {
+  let id = localStorage.getItem(visitorKey);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(visitorKey, id);
+  }
+  return id;
+}
 function showToast(message) {
   const toast = $("toast");
   toast.textContent = message;
   toast.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 1700);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 1900);
 }
 function goTo(page) {
   [pageOne,pageTwo,pageDone].forEach(p => p.classList.add("hidden"));
   page.classList.remove("hidden");
   window.scrollTo({top:0,behavior:"smooth"});
 }
-function moveButton(button, container, scale) {
-  const area = container.getBoundingClientRect();
-  const btn = button.getBoundingClientRect();
-  const maxX = Math.max(0, area.width - btn.width);
-  const maxY = 28;
-  const x = Math.random() * maxX - maxX/2;
-  const y = (Math.random() * maxY) - maxY/2;
-  button.style.transform = `translate(${x}px,${y}px) scale(${scale})`;
+function track(eventType) {
+  const payload = { visitorId, event: eventType };
+  fetch(`${API_BASE}/api/track`, {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload),
+    keepalive:true
+  }).catch(() => {});
 }
-function escapeFirst() {
-  firstEscapes++;
-  firstYes.style.transform = `scale(${Math.max(.48, 1 - firstEscapes*.13)})`;
-  firstYes.style.opacity = String(Math.max(.45, 1 - firstEscapes*.09));
-  firstNo.style.transform = `scale(${1 + firstEscapes*.12})`;
-  moveButton(firstYes, $("page-one"), Math.max(.48, 1-firstEscapes*.13));
-  const lines = ["نه دیگه کات کن 😂","عه! نزدیک بودا 😭","این‌قدر اصرار نکن 😂","بی‌خیال آره شو، نه رو بزن 🙈"];
-  $("first-hint").textContent = lines[Math.min(firstEscapes-1, lines.length-1)];
+function moveAcrossPage(button, scale=1) {
+  const margin = 18;
+  const width = button.offsetWidth;
+  const height = button.offsetHeight;
+  const maxX = Math.max(margin, window.innerWidth - width - margin);
+  const maxY = Math.max(80, window.innerHeight - height - margin);
+  const x = margin + Math.random() * Math.max(0, maxX - margin);
+  const y = margin + Math.random() * Math.max(0, maxY - margin);
+  button.style.position = "fixed";
+  button.style.left = `${x}px`;
+  button.style.top = `${y}px`;
+  button.style.zIndex = "10";
+  button.style.transform = `scale(${scale})`;
 }
-firstYes.addEventListener("pointerenter", (e) => { if(e.pointerType === "mouse") escapeFirst(); });
-firstYes.addEventListener("pointerdown", (e) => { e.preventDefault(); escapeFirst(); });
-firstYes.addEventListener("click", (e) => { e.preventDefault(); escapeFirst(); });
-firstNo.addEventListener("click", () => goTo(pageTwo));
-
-function escapeSecond() {
-  secondEscapes++;
-  const messages = ["حالا فکراتو کن! 😂","ترو خدا نه نگو 🥺","آخه چرااا؟ 😭","من هنوز امید دارم! 💔"];
-  $("second-hint").textContent = messages[Math.min(secondEscapes-1,messages.length-1)];
-  if(secondEscapes >= 4) {
-    secondNo.classList.add("vanish");
-    secondNo.style.transition = "opacity .35s, transform .35s";
-    secondNo.style.opacity = "0";
-    secondNo.style.transform = "scale(.1) rotate(25deg)";
-    setTimeout(() => secondNo.remove(), 380);
-    showToast("دکمه نه استعفا داد! 😂");
-  } else {
-    const scale = Math.max(.72,1-secondEscapes*.08);
-    secondNo.style.transform = `translate(${(Math.random()-.5)*100}px,${(Math.random()-.5)*35}px) scale(${scale})`;
+function escapeFirst(countAttempt) {
+  if (countAttempt) {
+    firstAttempts++;
+    track("first_yes_attempt");
   }
+  const lines = ["نه دیگه کات کن 😂","عه! نزدیک بودا 😭","این‌قدر اصرار نکن 😂","بی‌خیال آره شو، نه رو بزن 🙈","دکمه آره امروز مرخصیه! 😂"];
+  $("first-hint").textContent = lines[Math.min(firstAttempts, lines.length)-1] || lines[4];
+  moveAcrossPage(firstYes, Math.max(.72, 1-firstAttempts*.035));
 }
-secondNo.addEventListener("pointerenter", (e) => { if(e.pointerType === "mouse") escapeSecond(); });
-secondNo.addEventListener("pointerdown", (e) => { e.preventDefault(); escapeSecond(); });
-secondNo.addEventListener("click", (e) => { e.preventDefault(); escapeSecond(); });
-
-secondYes.addEventListener("click", async () => {
-  secondYes.disabled = true;
-  secondYes.textContent = "ثبت شد! 💗";
-  goTo(pageDone);
-  if (!WORKER_URL) {
-    showToast("برای فعال شدن اعلان تلگرام، آدرس Worker را تنظیم کن.");
-    return;
-  }
-  try {
-    const response = await fetch(WORKER_URL, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({event:"yes_clicked", page:"second"})
-    });
-    if(!response.ok) throw new Error("notify failed");
-  } catch(err) {
-    showToast("جواب ثبت شد، اما ارسال اعلان ناموفق بود.");
-  }
+firstYes.addEventListener("pointerenter", e => {
+  if (e.pointerType === "mouse") escapeFirst(false);
+});
+firstYes.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  escapeFirst(true);
+});
+firstYes.addEventListener("click", e => e.preventDefault());
+firstNo.addEventListener("click", () => {
+  firstYes.style.position = "";
+  firstYes.style.left = "";
+  firstYes.style.top = "";
+  firstYes.style.transform = "";
+  goTo(pageTwo);
 });
 
-// قلب‌های شناور تزئینی
-const heartLayer = document.querySelector(".hearts");
-const symbols = ["♥","♡","✦","💕"];
-setInterval(() => {
-  const heart = document.createElement("span");
-  heart.className = "heart";
-  heart.textContent = symbols[Math.floor(Math.random()*symbols.length)];
-  heart.style.left = Math.random()*100+"%";
-  heart.style.fontSize = (12+Math.random()*15)+"px";
-  heart.style.animationDuration = (7+Math.random()*6)+"s";
-  heartLayer.appendChild(heart);
-  setTimeout(()=>heart.remove(),14000);
-},850);
+function escapeSecond(countAttempt) {
+  if (countAttempt) {
+    secondAttempts++;
+    track("second_no_attempt");
+  }
+  const messages = ["حالا فکراتو کن! 😂","ترو خدا نه نگو 🥺","آخه چرااا؟ 😭","من هنوز امید دارم! 💔","این دکمه هم تسلیم نمی‌شه! 😂"];
+  $("second-hint").textContent = messages[Math.min(secondAttempts, messages.length)-1] || messages[4];
+  moveAcrossPage(secondNo, Math.max(.72, 1-secondAttempts*.025));
+}
+secondNo.addEventListener("pointerenter", e => {
+  if (e.pointerType === "mouse") escapeSecond(false);
+});
+secondNo.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  escapeSecond(true);
+});
+secondNo.addEventListener("click", e => e.preventDefault());
+
+secondYes.addEventListener("click", () => {
+  secondYes.disabled = true;
+  secondYes.textContent = "ثبت شد! 💗";
+  track("final_yes");
+  goTo(pageDone);
+});
+
+track("page_view");
+
+// پنل مدیریت
+const adminPanel = $("admin-panel");
+let adminToken = sessionStorage.getItem("mahdiPinkAdminToken") || "";
+$("admin-open").addEventListener("click", () => adminPanel.classList.remove("hidden"));
+$("admin-close").addEventListener("click", () => adminPanel.classList.add("hidden"));
+adminPanel.addEventListener("click", e => {
+  if (e.target === adminPanel) adminPanel.classList.add("hidden");
+});
+function showAdminError(message) { $("admin-error").textContent = message; }
+async function loadStats() {
+  const response = await fetch(`${API_BASE}/api/admin/stats`, {
+    headers: { "Authorization": `Bearer ${adminToken}` }
+  });
+  if (!response.ok) throw new Error("دسترسی نامعتبر یا نشست منقضی شده است.");
+  const data = await response.json();
+  $("stat-visitors").textContent = data.summary.visitors;
+  $("stat-views").textContent = data.summary.pageViews;
+  $("stat-first").textContent = data.summary.firstYesAttempts;
+  $("stat-second").textContent = data.summary.secondNoAttempts;
+  $("stat-final").textContent = data.summary.finalYes;
+  const tbody = $("visitor-rows");
+  tbody.replaceChildren();
+  if (!data.visitors.length) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 7; td.textContent = "هنوز آماری ثبت نشده است.";
+    tr.appendChild(td); tbody.appendChild(tr); return;
+  }
+  for (const v of data.visitors) {
+    const tr = document.createElement("tr");
+    const values = [v.shortId,v.deviceType || "نامشخص",v.browser || "نامشخص",v.country || "نامشخص",v.firstYesAttempts,v.secondNoAttempts,v.finalYes ? "بله" : "خیر"];
+    for (const value of values) {
+      const td = document.createElement("td");
+      td.textContent = String(value);
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
+$("admin-login").addEventListener("submit", async e => {
+  e.preventDefault();
+  showAdminError("در حال بررسی...");
+  try {
+    const response = await fetch(`${API_BASE}/api/admin/login`, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({password:$("admin-password").value})
+    });
+    const data = await response.json();
+    if (!response.ok || !data.token) throw new Error(data.error || "رمز عبور درست نیست.");
+    adminToken = data.token;
+    sessionStorage.setItem("mahdiPinkAdminToken", adminToken);
+    $("admin-login").classList.add("hidden");
+    $("admin-content").classList.remove("hidden");
+    showAdminError("");
+    await loadStats();
+  } catch (err) { showAdminError(err.message || "اتصال برقرار نشد."); }
+});
+$("refresh-stats").addEventListener("click", async () => {
+  try { await loadStats(); showToast("آمار به‌روز شد."); }
+  catch (err) { showAdminError(err.message); }
+});
+$("admin-logout").addEventListener("click", () => {
+  adminToken = "";
+  sessionStorage.removeItem("mahdiPinkAdminToken");
+  $("admin-content").classList.add("hidden");
+  $("admin-login").classList.remove("hidden");
+  $("admin-password").value = "";
+});
